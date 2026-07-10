@@ -23,6 +23,7 @@ jobs:
         run: |
           ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} '
             set -e
+            export PATH="/root/.nvm/versions/node/v24.18.0/bin:$PATH"
             cd /opt/tiny-erp-automation
             git fetch origin main
             git reset --hard origin/main
