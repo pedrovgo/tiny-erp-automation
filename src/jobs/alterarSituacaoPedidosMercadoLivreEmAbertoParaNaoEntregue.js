@@ -14,7 +14,7 @@ module.exports = {
   name: 'alterar-situacao-pedidos-mercado-livre-em-aberto-para-nao-entregue',
 
   // TEMPORÁRIO: roda a cada 1 minuto, só para teste. Ajuste depois (ex: '*/15 * * * *').
-  cronExpression: '*/1 * * * *',
+  cronExpression: '*/5 * * * *',
 
   async run() {
     logger.info('[alterar-situacao-pedidos-mercado-livre-em-aberto-para-nao-entregue] Iniciando execução...');

@@ -1,0 +1,38 @@
+name: Deploy para VPS
+
+# Roda automaticamente a cada push na main, e permite disparo manual pela aba Actions
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configurar chave SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+
+      - name: Adicionar VPS aos known_hosts
+        run: ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Atualizar código, instalar dependências e reiniciar serviço
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} '
+            set -e
+            cd /opt/tiny-erp-automation
+            git fetch origin main
+            git reset --hard origin/main
+            npm ci --omit=dev
+            systemctl restart tiny-erp-automation
+            systemctl is-active --quiet tiny-erp-automation
+          '
+
+      - name: Verificar status do serviço
+        run: |
+          ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} '
+            systemctl status tiny-erp-automation --no-pager -l
+          '
